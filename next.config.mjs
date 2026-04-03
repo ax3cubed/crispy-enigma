@@ -1,6 +1,4 @@
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   // ltijs and its dependencies are CommonJS; exclude from Next.js bundling
   serverExternalPackages: ['ltijs', 'ltijs-sequelize', 'sequelize', 'sqlite3', 'better-sqlite3'],
 }
