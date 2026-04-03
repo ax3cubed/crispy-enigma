@@ -18,7 +18,7 @@
     "ltijs-sequelize": "^2.4.4",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",
-    "better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^12.8.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
