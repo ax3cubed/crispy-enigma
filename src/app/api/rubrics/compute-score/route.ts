@@ -15,16 +15,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'rubricId and criterionScores are required' }, { status: 400 })
   }
 
-  const db = getDb()
+  const db = await getDb()
 
-  const rubricRow = db.prepare('SELECT * FROM rubrics WHERE id = ?').get(rubricId) as Record<string, unknown> | undefined
+  const rubricRow = (await db.prepare('SELECT * FROM rubrics WHERE id = ?').get(rubricId)) as Record<string, unknown> | undefined
   if (!rubricRow) {
     return NextResponse.json({ error: 'Rubric not found' }, { status: 404 })
   }
 
-  const criteriaRows = db
+  const criteriaRows = (await db
     .prepare('SELECT * FROM rubric_criteria WHERE rubric_id = ? ORDER BY sort_order')
-    .all(rubricId) as Array<{
+    .all(rubricId)) as Array<{
     id: string
     rubric_id: string
     label: string
