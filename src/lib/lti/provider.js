@@ -47,7 +47,7 @@ if (ltiDbUrl) {
   })
 }
 
-lti.setup(LTI_KEY, db, {
+lti.setup(LTI_KEY, { plugin: db }, {
   appRoute: '/lti/launch',
   loginRoute: '/lti/login',
   // devMode disables HTTPS-only cookie enforcement for local development.
