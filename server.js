@@ -107,9 +107,10 @@ async function start() {
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
 
-  // Mount ltijs-protected LTI service API routes
-  // lti.protect validates the LTIK cookie and sets res.locals.token
-  app.use('/api/lti', lti.protect, ltiRouter)
+  // Mount ltijs-protected LTI service API routes on the ltijs internal app.
+  // ltijs attaches its session validation middleware to `lti.app`, so mount
+  // our routes there to ensure `res.locals.token` is populated.
+  lti.app.use('/api/lti', ltiRouter)
 
   // Mount the ltijs router (handles /lti/login, /lti/launch, /lti/keys, etc.)
   app.use(lti.app)
