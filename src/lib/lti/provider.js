@@ -11,17 +11,41 @@
 const { Provider: lti } = require('ltijs')
 const Database = require('ltijs-sequelize')
 const path = require('path')
+const { URL } = require('url')
 
-const LTI_DB_PATH = process.env.LTI_DB_PATH ?? path.join(process.cwd(), 'lti.db')
 const LTI_KEY = process.env.LTI_KEY ?? 'INSECURE_DEFAULT_KEY_CHANGE_IN_PRODUCTION'
 
-// ltijs-sequelize with SQLite dialect.
-// For SQLite, username/password/database name are irrelevant — storage path is all that matters.
-const db = new Database('ltidb', null, null, {
-  dialect: 'sqlite',
-  storage: LTI_DB_PATH,
-  logging: false,
-})
+// Choose database engine based on environment. In production use a proper
+// RDS/managed DB (Postgres) via LTI_DB_URL or DATABASE_URL. Otherwise fall
+// back to SQLite for local development (requires sqlite3 installed in dev).
+let db
+const ltiDbUrl = process.env.LTI_DB_URL ?? process.env.DATABASE_URL
+if (ltiDbUrl) {
+  // Parse a connection URL like postgres://user:pass@host:port/dbname
+  const parsed = new URL(ltiDbUrl)
+  const proto = parsed.protocol.replace(':', '')
+  const dialect = proto === 'postgresql' ? 'postgres' : proto
+  const dbName = parsed.pathname ? parsed.pathname.replace(/^\//, '') : undefined
+  const dbUser = parsed.username || null
+  const dbPass = parsed.password || null
+
+  db = new Database(dbName, dbUser, dbPass, {
+    dialect,
+    host: parsed.hostname,
+    port: parsed.port ? Number(parsed.port) : undefined,
+    logging: false,
+    dialectOptions: dialect === 'postgres' ? { ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false' } : undefined } : undefined,
+  })
+} else {
+  const LTI_DB_PATH = process.env.LTI_DB_PATH ?? path.join(process.cwd(), 'lti.db')
+  // ltijs-sequelize with SQLite dialect. For SQLite, username/password/database
+  // name are irrelevant — storage path is all that matters.
+  db = new Database('ltidb', null, null, {
+    dialect: 'sqlite',
+    storage: LTI_DB_PATH,
+    logging: false,
+  })
+}
 
 lti.setup(LTI_KEY, db, {
   appRoute: '/lti/launch',

@@ -16,11 +16,12 @@
     "ltijs": "^5.9.9",
     "ltijs-sequelize": "^2.4.4",
     "next": "^15.5.14",
+    "pg": "^8.11.0",
+    "pg-hstore": "^2.3.4",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "sequelize": "^6.37.3",
     "sql.js": "^1.14.1",
-    "sqlite3": "^6.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@types/uuid": "^9.0.8",
     "eslint": "^8",
     "eslint-config-next": "15.0.0",
+    "sqlite3": "^6.0.1",
     "typescript": "^5"
   }
 }
